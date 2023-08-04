@@ -1,0 +1,46 @@
+name: kernel_build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - linux-msft-wsl-6.1.y
+  release:
+    types: [published ]
+jobs:
+  build_NX:
+      runs-on: ubuntu-22.04
+    
+      steps:
+        - name: Space cleanup
+          env:
+            DEBIAN_FRONTEND: noninteractive
+          run: |
+            docker rmi `docker images -q`
+            sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d
+            sudo -E apt-get -y purge azure-cli ghc* zulu* llvm* firefox google* dotnet* powershell openjdk* php* android*
+   
+            sudo -E apt-get -y autoremove --purge
+            sudo -E apt-get clean
+            df -h
+        - name: Checkout
+          uses: actions/checkout@v3
+          with:
+            ref: linux-msft-wsl-6.1.y
+            submodules: recursive
+        - run: |
+               sudo -E apt-get update -y
+               sudo -E apt-get install -y build-essential flex bison dwarves libssl-dev libelf-dev
+               sudo -E cp Microsoft/config-wsl .config
+               sudo -E echo $'\n' | make bzImage -j$(nproc)
+        # - name: Remove old artifacts
+        #   uses: c-hive/gha-remove-artifacts@v1
+        #   with:
+        #     age: '5 minute'
+            # skip-tags: true
+            # skip-recent: 1
+        - name: Upload kernel
+          uses: actions/upload-artifact@v3
+          with:
+            name: kernel
+            path: arch/x86/boot/bzImage
