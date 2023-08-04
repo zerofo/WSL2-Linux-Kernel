@@ -8,7 +8,7 @@ on:
   release:
     types: [published ]
 jobs:
-  build_NX:
+  build_WSL_KERNEL:
       runs-on: ubuntu-22.04
     
       steps:
