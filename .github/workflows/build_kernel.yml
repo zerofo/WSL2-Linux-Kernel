@@ -32,6 +32,7 @@ jobs:
                sudo -E apt-get update -y
                sudo -E apt-get install -y build-essential flex bison dwarves libssl-dev libelf-dev
                sudo -E cp Microsoft/config-wsl .config
+               sudo -E echo $"CONFIG_CC_HAS_SLS=y\nCONFIG_USB_WDM=y\nCONFIG_USB_STORAGE=y\nCONFIG_USB_STORAGE_DEBUG=y\nCONFIG_USB_STORAGE_REALTEK=yCONFIG_USB_STORAGE_USBAT=y\nCONFIG_USB_STORAGE_SDDR09=y\nCONFIG_USB_STORAGE_SDDR55=y\nCONFIG_USB_STORAGE_JUMPSHOT=y\nCONFIG_USB_STORAGE_ALAUDA=y\nCONFIG_USB_STORAGE_ONETOUCH=y\nCONFIG_USB_STORAGE_KARMA=y\nCONFIG_NVME_CORE=y\nCONFIG_BLK_DEV_NVME=y\n" >> .config
                sudo -E echo $'\n' | make bzImage -j$(nproc)
         # - name: Remove old artifacts
         #   uses: c-hive/gha-remove-artifacts@v1
